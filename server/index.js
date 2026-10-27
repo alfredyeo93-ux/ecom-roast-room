@@ -53,12 +53,17 @@ app.post("/api/roast", async (req, res) => {
     if (demo) {
       await runDemo({ send, signal: ac.signal });
     } else {
-      const { key } = resolveApiKey();
-      if (!key) {
+      // A key typed into the browser arrives in this header. It is used for this
+      // request only: never logged, never written to runs/, never kept in memory.
+      const headerKey = req.get("x-anthropic-key");
+      const userKey = typeof headerKey === "string" ? headerKey.trim() : "";
+      const key = userKey || resolveApiKey().key;
+      if (userKey && !/^sk-ant-[\w-]{20,300}$/.test(userKey)) {
+        send({ type: "error", message: "That doesn't look like a Claude API key. It should start with sk-ant-." });
+      } else if (!key) {
         send({
           type: "error",
-          message:
-            "No ANTHROPIC_API_KEY found. Set it with `setx ANTHROPIC_API_KEY <key>` (then restart the terminal), or tick Demo mode.",
+          message: "No API key. Paste your Claude API key into the form, set ANTHROPIC_API_KEY on the server, or tick Demo mode.",
         });
       } else {
         const snippet = req.body?.fetchSite === false || !input.storeUrl ? "" : await fetchStoreSnippet(input.storeUrl);

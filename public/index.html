@@ -74,6 +74,22 @@
           <label>Notes for the panel<textarea name="notes" rows="2" placeholder="What you're planning, what you're stuck on"></textarea></label>
           <label class="check"><input type="checkbox" name="fetchSite" checked /> Read my store homepage before the roast</label>
 
+          <details class="keybox" id="keybox">
+            <summary>Your Claude API key <span id="key-state"></span></summary>
+            <label>Anthropic API key
+              <input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…" />
+            </label>
+            <div class="key-row">
+              <label class="check"><input type="checkbox" id="remember-key" /> Remember on this device</label>
+              <button class="ghost" id="clear-key" type="button">Clear</button>
+            </div>
+            <p class="key-note">
+              Stays in this browser. It is sent only to this Roast Room server with each live roast, used for that request and
+              never saved or logged. Get one at
+              <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer">console.anthropic.com</a>.
+              Only enter it on a Roast Room you run yourself or trust.
+            </p>
+          </details>
           <button class="primary" id="go" type="submit">Start the roast</button>
           <p class="hint" id="hint"></p>
         </form>

@@ -20,6 +20,18 @@ let scene;
 let state;
 let hasKey = false;
 
+const KEY_STORE = "roastroom.apiKey";
+const keyInput = $("#api-key");
+const rememberKey = $("#remember-key");
+const store = (kind) => {
+  try {
+    return window[kind];
+  } catch {
+    return null;
+  }
+};
+const userKey = () => keyInput.value.trim();
+
 const esc = (s = "") =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const byId = (id) => personas.find((p) => p.id === id);
@@ -28,11 +40,9 @@ const byId = (id) => personas.find((p) => p.id === id);
 const health = await fetch("/api/health").then((r) => r.json());
 personas = health.personas;
 hasKey = health.hasKey;
-demoToggle.checked = !hasKey;
 costEl.textContent = `model: ${health.model}`;
-hint.textContent = hasKey
-  ? `API key found (${health.keySource}). Live roasts call Claude and cost a little.`
-  : "No ANTHROPIC_API_KEY found, so only demo mode works. See the README to set one.";
+setupKeyBox();
+demoToggle.checked = !hasKey && !userKey();
 scene = createScene($("#stage"), personas);
 renderCards();
 
@@ -45,6 +55,50 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
   startRoast();
 });
+
+// ---------- bring-your-own API key ----------
+// The key lives only in this browser (sessionStorage, or localStorage when
+// "Remember" is ticked). It is sent in a header with each live roast and is
+// never part of the brief, so it never lands in runs/ transcripts.
+
+function setupKeyBox() {
+  const saved = store("localStorage")?.getItem(KEY_STORE);
+  keyInput.value = saved || store("sessionStorage")?.getItem(KEY_STORE) || "";
+  rememberKey.checked = Boolean(saved);
+  $("#keybox").open = !hasKey && !userKey();
+  keyInput.addEventListener("input", saveKey);
+  rememberKey.addEventListener("change", saveKey);
+  $("#clear-key").addEventListener("click", () => {
+    keyInput.value = "";
+    rememberKey.checked = false;
+    saveKey();
+  });
+  updateKeyHint();
+}
+
+function saveKey() {
+  const k = userKey();
+  try {
+    if (k) store("sessionStorage")?.setItem(KEY_STORE, k);
+    else store("sessionStorage")?.removeItem(KEY_STORE);
+    if (k && rememberKey.checked) store("localStorage")?.setItem(KEY_STORE, k);
+    else store("localStorage")?.removeItem(KEY_STORE);
+  } catch {
+    // storage blocked (private mode): the key still works for this page
+  }
+  if (k) demoToggle.checked = false;
+  updateKeyHint();
+}
+
+function updateKeyHint() {
+  const k = userKey();
+  $("#key-state").textContent = k ? "· set" : hasKey ? "· optional" : "· required for live roasts";
+  hint.textContent = k
+    ? "Using your API key. Live roasts call Claude and cost about $0.30–0.80 each."
+    : hasKey
+      ? "Using the server's API key. Live roasts call Claude and cost a little."
+      : "Add your Claude API key above for a live roast, or tick Demo mode to try it free.";
+}
 
 // ---------- form helpers ----------
 function fillForm(data) {
@@ -222,8 +276,15 @@ function showToast(msg) {
 async function startRoast() {
   const body = readForm();
   const demo = demoToggle.checked;
-  if (!demo && !hasKey) {
-    showToast("No API key found. Tick Demo mode, or set ANTHROPIC_API_KEY and restart the server.");
+  const key = demo ? "" : userKey();
+  if (!demo && !hasKey && !key) {
+    $("#keybox").open = true;
+    keyInput.focus();
+    showToast("Add your Claude API key, or tick Demo mode to try it free.");
+    return;
+  }
+  if (key && !/^sk-ant-[\w-]{20,}$/.test(key)) {
+    showToast("That doesn't look like a Claude API key. It should start with sk-ant-.");
     return;
   }
   if (!body.product && !body.storeUrl && !demo) {
@@ -243,7 +304,7 @@ async function startRoast() {
   try {
     const res = await fetch(`/api/roast${demo ? "?demo=1" : ""}`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...(key ? { "x-anthropic-key": key } : {}) },
       body: JSON.stringify(body),
     });
     if (!res.ok || !res.body) throw new Error(`Server returned ${res.status}`);

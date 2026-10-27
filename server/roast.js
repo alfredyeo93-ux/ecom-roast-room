@@ -63,7 +63,7 @@ async function streamText(client, params, signal, onDelta) {
 }
 
 function friendlyError(err) {
-  if (err instanceof Anthropic.AuthenticationError) return "Claude rejected the API key (401). Check ANTHROPIC_API_KEY.";
+  if (err instanceof Anthropic.AuthenticationError) return "Claude rejected the API key (401). Check the key you entered, or ANTHROPIC_API_KEY on the server.";
   if (err instanceof Anthropic.PermissionDeniedError) return "This API key can't use that model (403).";
   if (err instanceof Anthropic.NotFoundError) return `Model not found: ${MODEL}. Set ROAST_MODEL to a valid model id.`;
   if (err instanceof Anthropic.RateLimitError) return "Rate limited by the Claude API (429). Wait a moment and retry.";

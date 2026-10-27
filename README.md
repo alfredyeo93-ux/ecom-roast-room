@@ -31,9 +31,15 @@ npm install && npm run dev
 
 Then open http://localhost:5178. Tick **Demo mode** to replay a pre-written roast of the sample store with zero API spend.
 
-### Live mode: set your Claude API key
+### Live mode: add your Claude API key
 
-The server reads `ANTHROPIC_API_KEY` from the environment. It never prints or stores the key.
+**Easiest: paste it into the app.** Open **Your Claude API key** above the Start button and paste a key from [console.anthropic.com](https://console.anthropic.com/settings/keys). It works like this:
+
+- The key stays in your browser (`sessionStorage`, or `localStorage` only if you tick **Remember on this device**). **Clear** removes it.
+- It's sent to the Roast Room server in an `x-anthropic-key` header with each live roast, used for that one request, and never logged or written to `runs/`.
+- Whoever runs the server could read it. Only paste your key into a Roast Room you run yourself or trust. If you host this for other people, use HTTPS.
+
+**Or set it on the server.** The server reads `ANTHROPIC_API_KEY` from the environment and never prints or stores it. A key pasted in the browser takes priority over the server's key.
 
 On Windows, set it once for your user (no admin needed):
 
