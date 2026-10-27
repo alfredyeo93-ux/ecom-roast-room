@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+*.log
+
+# Keep source books local only. Never commit copyrighted PDFs or ebook text.
+ebooks/
+kb-local/
+*.pdf
+*.epub
+*.rtf
+
+# Saved roast transcripts can contain private store numbers
+runs/

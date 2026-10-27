@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>E-com Roast Room</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/vendor/three/build/three.module.js",
+          "three/addons/": "/vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">🔥</span>
+        <div>
+          <div class="brand-name">E-COM ROAST ROOM</div>
+          <div class="brand-sub">Four advisors. One store. No yes-men.</div>
+        </div>
+      </div>
+      <div class="status" id="status"><span class="dot"></span><span id="status-text">THE ROOM IS OPEN</span></div>
+      <div class="top-right">
+        <label class="mode" title="Demo mode replays a pre-written roast and makes no API calls">
+          <input type="checkbox" id="demo-toggle" />
+          <span>Demo mode (no API spend)</span>
+        </label>
+        <div class="cost" id="cost">model: …</div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- Left: store brief -->
+      <section class="panel form-panel" aria-label="Store brief">
+        <div class="panel-head">
+          <h2>Bring your store to the room</h2>
+          <button class="ghost" id="load-sample" type="button">Load sample store</button>
+        </div>
+        <form id="brief">
+          <div class="row2">
+            <label>Store name<input name="storeName" placeholder="GlowNest" /></label>
+            <label>Store URL<input name="storeUrl" type="url" placeholder="https://yourstore.com" /></label>
+          </div>
+          <label>Product<textarea name="product" rows="3" placeholder="What it is, who it's for, why it's different"></textarea></label>
+          <div class="row2">
+            <label>Price ($)<input name="price" inputmode="decimal" placeholder="39.99" /></label>
+            <label>Target customer<input name="audience" placeholder="Gen Z renters…" /></label>
+          </div>
+          <label>Offer<textarea name="offer" rows="2" placeholder="Discounts, bundles, guarantee, shipping"></textarea></label>
+          <label>Ad copy<textarea name="adCopy" rows="4" placeholder="Paste your best-performing ad"></textarea></label>
+
+          <fieldset class="pnl">
+            <legend>Monthly P&amp;L</legend>
+            <div class="grid4">
+              <label>Revenue<input name="pnl.revenue" inputmode="decimal" placeholder="42000" /></label>
+              <label>COGS<input name="pnl.cogs" inputmode="decimal" placeholder="10300" /></label>
+              <label>Shipping<input name="pnl.shipping" inputmode="decimal" placeholder="4010" /></label>
+              <label>Ad spend<input name="pnl.adSpend" inputmode="decimal" placeholder="18500" /></label>
+              <label>Opex<input name="pnl.opex" inputmode="decimal" placeholder="6200" /></label>
+              <label>AOV<input name="pnl.aov" inputmode="decimal" placeholder="44" /></label>
+              <label>Conv. rate %<input name="pnl.conversionRate" inputmode="decimal" placeholder="1.6" /></label>
+              <label>Refund %<input name="pnl.refundRate" inputmode="decimal" placeholder="7" /></label>
+            </div>
+          </fieldset>
+          <label>Notes for the panel<textarea name="notes" rows="2" placeholder="What you're planning, what you're stuck on"></textarea></label>
+          <label class="check"><input type="checkbox" name="fetchSite" checked /> Read my store homepage before the roast</label>
+
+          <button class="primary" id="go" type="submit">Start the roast</button>
+          <p class="hint" id="hint"></p>
+        </form>
+        <div class="metrics" id="metrics" hidden></div>
+      </section>
+
+      <!-- Center: 3D room -->
+      <section class="stage-wrap" aria-label="3D roast room">
+        <div id="stage"></div>
+        <div class="stage-caption" id="stage-caption">
+          <div class="eyebrow">● THE ROOM IS OPEN</div>
+          <div class="headline">Bring a store to the Roast Room</div>
+          <div class="sub">Fill in the brief, hit start, and four advisors argue it out live.</div>
+        </div>
+        <section class="verdict" id="verdict" hidden aria-live="polite"></section>
+      </section>
+
+      <!-- Right: advisor panels -->
+      <section class="panel advisors" id="advisors" aria-label="Advisor panels"></section>
+    </main>
+
+    <footer class="disclaimer">
+      The advisors are fictional AI characters inspired by published frameworks of Alex Hormozi, Eugene Schwartz, Mike
+      Michalowicz and Nick Theriot. They are not those people, do not speak for them, and this project is not
+      affiliated with or endorsed by them. Advice is AI-generated; check the numbers before you act.
+    </footer>
+
+    <div class="toast" id="toast" role="alert" hidden></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

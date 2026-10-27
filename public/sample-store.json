@@ -1,0 +1,20 @@
+{
+  "storeName": "GlowNest",
+  "storeUrl": "https://glownest.example",
+  "product": "GlowNest Sunset Lamp: a USB projector lamp that throws a sunset-coloured halo on the wall. 4 colour heads, 180° rotation, remote control. Sold mainly to 18-34 year olds decorating bedrooms and content-creator corners.",
+  "price": 39.99,
+  "offer": "20% off sitewide with code GLOW20. Free shipping over $50. 30-day returns.",
+  "adCopy": "✨ Transform your room into a sunset paradise! ✨\nThe viral lamp everyone is talking about. Perfect for selfies, TikToks and chill vibes.\nShop now and get 20% OFF 🌅 Limited time only!",
+  "audience": "Gen Z and young millennials, renters, bedroom/aesthetic decor, TikTok shoppers",
+  "notes": "Running Meta Advantage+ with 6 ads, all product-on-wall b-roll with music. Thinking about scaling ad spend to $30k/month.",
+  "pnl": {
+    "revenue": 42000,
+    "cogs": 10300,
+    "shipping": 4010,
+    "adSpend": 18500,
+    "opex": 6200,
+    "aov": 44,
+    "conversionRate": 1.6,
+    "refundRate": 7
+  }
+}
