@@ -92,6 +92,7 @@ server/
 - **Computed metrics:** before any model call, the server works out orders, gross and contribution margin, net profit, MER, break-even ROAS and CAC from your P&L. The advisors argue about strategy instead of doing arithmetic.
 - **Homepage fetch:** if you give a store URL, the server grabs the page title, meta description and visible text (capped at 2,500 chars). Untick it in the form to skip.
 - **Verdict:** uses structured outputs (`output_config.format` with a JSON schema), so the plan always parses.
+- **PDF report:** **Download PDF report** on the verdict opens a printable A4 report (verdict, your numbers, advisor scores, the plan in order, each advisor's stance and top fix, watch-out quotes). Choose **Save as PDF** in the print dialog. It's built in the browser from the roast you just ran; nothing extra is sent anywhere.
 - **Run transcripts:** every roast is saved to `runs/<timestamp>.json` (final advisor replies, verdict, token usage). `runs/` is gitignored because it holds your store's numbers.
 - **Self-check:** `npm run check` tests the parsers, metrics and prompt assembly offline, with no API calls.
 

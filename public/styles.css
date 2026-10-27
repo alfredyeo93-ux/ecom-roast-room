@@ -227,6 +227,7 @@ button.ghost { background: transparent; color: var(--accent); padding: 6px 10px;
 .v-close { margin: 10px 0 0; font: 600 14px var(--head); color: var(--accent); }
 .v-actions { display: flex; gap: 8px; margin-top: 10px; }
 .v-actions button { background: transparent; color: var(--text); padding: 6px 10px; font-size: 12px; }
+.v-actions button.pdf-btn { background: var(--accent); color: #07101e; border-color: transparent; }
 
 /* ---------- misc ---------- */
 .disclaimer { color: var(--muted); font-size: 11px; text-align: center; padding: 6px 20px 14px; }

@@ -19,6 +19,7 @@ let personas = [];
 let scene;
 let state;
 let hasKey = false;
+let lastMetrics = null;
 
 const KEY_STORE = "roastroom.apiKey";
 const keyInput = $("#api-key");
@@ -182,6 +183,7 @@ function setSpeaking(id, on) {
 
 // ---------- metrics ----------
 function renderMetrics(m) {
+  lastMetrics = m;
   const items = [];
   const money = (n) => `$${Math.round(n).toLocaleString("en-US")}`;
   const pct = (n) => `${(n * 100).toFixed(1)}%`;
@@ -241,14 +243,45 @@ function renderVerdict(v) {
     </div>
     <p class="v-close">${esc(v.closing_line || "")}</p>
     <div class="v-actions">
+      <button type="button" id="download-pdf" class="pdf-btn">Download PDF report</button>
       <button type="button" id="copy-plan">Copy plan as Markdown</button>
       <button type="button" id="hide-verdict">Hide verdict</button>
     </div>`;
   $("#hide-verdict").onclick = () => (verdictEl.hidden = true);
+  $("#download-pdf").onclick = () => openReport(v);
   $("#copy-plan").onclick = async () => {
     await navigator.clipboard.writeText(planMarkdown(v));
     $("#copy-plan").textContent = "Copied ✓";
   };
+}
+
+// The report page reads this snapshot from localStorage, renders a printable A4 report and
+// opens the browser's "Save as PDF" dialog. The API key is never part of it.
+function openReport(v) {
+  const brief = readForm();
+  delete brief.fetchSite;
+  const report = {
+    createdAt: new Date().toISOString(),
+    demo: demoToggle.checked,
+    brief,
+    metrics: lastMetrics,
+    verdict: v,
+    advisors: personas.map((p) => ({
+      id: p.id,
+      name: p.name,
+      inspiredBy: p.inspiredBy,
+      color: p.color,
+      round1: parseRound1(state.results?.[`${p.id}:1`]?.text || state.text?.[`${p.id}:1`] || ""),
+      round2: parseRound2(state.results?.[`${p.id}:2`]?.text || state.text?.[`${p.id}:2`] || ""),
+    })),
+  };
+  try {
+    localStorage.setItem("roastroom.report", JSON.stringify(report));
+  } catch {
+    showToast("Your browser blocked local storage, so the report can't open. Try a normal (non-private) window.");
+    return;
+  }
+  window.open("/report.html", "_blank", "noopener");
 }
 
 function planMarkdown(v) {
@@ -292,7 +325,7 @@ async function startRoast() {
     return;
   }
 
-  state = { text: {}, phase: null };
+  state = { text: {}, results: {}, phase: null };
   renderCards();
   scene.reset();
   verdictEl.hidden = true;
@@ -358,6 +391,7 @@ function handle(evt) {
     }
     case "persona_done": {
       setSpeaking(evt.persona, false);
+      state.results[`${evt.persona}:${evt.round}`] = evt.result;
       const text = evt.result.text;
       if (evt.round === 1) {
         const r = renderRound1(evt.persona, text, true);
