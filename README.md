@@ -2,6 +2,8 @@
 
 A local web app where four AI advisor characters roast and coach your e-commerce store, live, around a 3D table.
 
+![The E-com Roast Room dashboard: brief on the left, the 3D room in the middle, advisor cards on the right](docs/img/03-dashboard.jpg)
+
 You paste in your store URL, product, offer, ad copy and a simple monthly P&L. Then:
 
 1. **Round 1, the roast.** Each advisor streams a roast, three specific fixes and a 0–10 score through their own lens.
