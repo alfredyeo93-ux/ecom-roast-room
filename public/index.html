@@ -72,6 +72,31 @@
             </div>
           </fieldset>
           <label>Notes for the panel<textarea name="notes" rows="2" placeholder="What you're planning, what you're stuck on"></textarea></label>
+          <fieldset class="research" id="research-box">
+            <legend>Ads &amp; customer research <span class="opt">optional</span></legend>
+            <div class="research-row">
+              <button type="button" class="ghost" id="use-research">Use latest research</button>
+              <label class="ghost filebtn">Upload Ads Manager CSV<input type="file" id="ads-file" accept=".csv,.json" hidden /></label>
+              <button type="button" class="ghost" id="clear-research">Clear</button>
+            </div>
+            <p class="research-status" id="research-status"></p>
+            <div class="funnel-mini" id="funnel-mini" hidden></div>
+            <div class="row2">
+              <label>Ads Manager link<input id="ads-link" placeholder="https://adsmanager.facebook.com/…act=123…" /></label>
+              <label>Your niche<input id="niche" placeholder="sunset lamp projector" /></label>
+            </div>
+            <div class="cmd-row">
+              <code id="research-cmd">/roast-research &lt;Ads Manager link&gt; | &lt;niche&gt;</code>
+              <button type="button" class="ghost" id="copy-cmd">Copy</button>
+            </div>
+            <p class="research-help">
+              In Claude Code with the Meta Ads connector, run this command to pull your last 30 days of ads and your niche's competitor
+              ads into <code>research/</code>, then click <b>Use latest research</b>. No connector? Upload an ad-level CSV export from
+              Ads Manager. <a id="adlib-link" href="https://www.facebook.com/ads/library/" target="_blank" rel="noopener noreferrer">Browse competitors in the Ad Library</a>
+            </p>
+            <label>Post-purchase survey answers<textarea id="survey" rows="3" placeholder="One answer per line, e.g. &quot;Saw it on a TikTok room tour…&quot;"></textarea></label>
+            <label class="ghost filebtn small">Upload survey CSV<input type="file" id="survey-file" accept=".csv,.txt" hidden /></label>
+          </fieldset>
           <label class="check"><input type="checkbox" name="fetchSite" checked /> Read my store homepage before the roast</label>
 
           <details class="keybox" id="keybox">

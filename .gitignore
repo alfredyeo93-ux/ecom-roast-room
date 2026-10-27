@@ -12,3 +12,6 @@ kb-local/
 
 # Saved roast transcripts can contain private store numbers
 runs/
+
+# Ad research bundles (from /roast-research or uploads) hold your private ad numbers
+research/*.json

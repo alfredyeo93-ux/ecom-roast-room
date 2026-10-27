@@ -247,3 +247,44 @@ button.ghost { background: transparent; color: var(--accent); padding: 6px 10px;
   .grid4 { grid-template-columns: 1fr 1fr; }
   .row2 { grid-template-columns: 1fr; }
 }
+
+/* ---------- ads & customer research ---------- */
+fieldset.research { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+fieldset.research .opt { color: var(--muted); font-weight: 500; font-size: 11px; }
+.research-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.filebtn { display: inline-flex; flex-direction: row; align-items: center; cursor: pointer; border: 1px solid var(--line-strong); border-radius: 10px; font: 600 12px var(--head); color: var(--accent); padding: 6px 10px; }
+.filebtn.small { align-self: flex-start; font-size: 11px; padding: 4px 8px; }
+.research-status { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.45; }
+.research-status b { color: var(--text); }
+.research-help { margin: 0; font-size: 11px; color: var(--muted); line-height: 1.5; }
+.research-help a { color: var(--accent); }
+.cmd-row { display: flex; gap: 6px; align-items: center; }
+.cmd-row code, .research-help code { font: 500 11.5px ui-monospace, Consolas, monospace; background: rgba(46, 230, 197, 0.08); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; color: var(--text); overflow-wrap: anywhere; }
+.cmd-row code { flex: 1; }
+.research-help code { padding: 1px 5px; }
+.funnel-mini { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
+.fm { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; display: flex; flex-direction: column; font-size: 11px; color: var(--muted); }
+.fm b { font: 800 13px var(--head); color: var(--text); }
+.fm.TOF { border-top: 3px solid #9aa7ff; } .fm.MOF { border-top: 3px solid #f5b942; } .fm.BOF { border-top: 3px solid #7bd88f; } .fm.ALL { border-top: 3px solid #2ee6c5; }
+.fm-note { grid-column: 1 / -1; margin: 0; font-size: 11px; color: #ffb4a9; }
+
+/* ---------- verdict: funnel, voice of customer, tests ---------- */
+.verdict > h3 { font: 700 11px var(--head); letter-spacing: 0.16em; color: var(--muted); margin: 16px 0 8px; }
+.funnel { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.fcard { border: 1px solid var(--line); border-radius: 10px; padding: 10px; font-size: 12.5px; background: #0a1424; }
+.fcard p { margin: 6px 0 0; }
+.fhead { display: flex; justify-content: space-between; align-items: center; }
+.fhead b { font: 800 14px var(--head); }
+.fverdict { font: 800 10px var(--head); letter-spacing: 0.08em; border-radius: 6px; padding: 3px 7px; }
+.fcard.double-down .fverdict { background: rgba(123, 216, 143, 0.18); color: #7bd88f; }
+.fcard.fix .fverdict { background: rgba(245, 185, 66, 0.18); color: #f5b942; }
+.fcard.cut .fverdict { background: rgba(255, 107, 91, 0.18); color: #ff6b5b; }
+.fcard.build .fverdict { background: rgba(154, 167, 255, 0.18); color: #9aa7ff; }
+.faction { color: var(--accent); }
+.theme, .angle { display: flex; flex-direction: column; border-left: 3px solid var(--accent); padding: 4px 10px; margin-bottom: 8px; font-size: 12.5px; }
+.theme span { color: var(--muted); font-style: italic; }
+.angle small, .tests small { color: var(--muted); font: 700 10px var(--head); letter-spacing: 0.06em; text-transform: uppercase; }
+.tests { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; }
+.tests li span { display: block; color: var(--muted); }
+.tests li .tbrief { color: var(--text); }
+.muted { color: var(--muted); font-size: 12px; }

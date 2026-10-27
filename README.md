@@ -87,7 +87,31 @@ server/
   parse.js         tolerant parsers, shared with the browser
   demo.js          demo-mode replay of data/demo-roast.json
   apiKey.js        env / Windows user-env key lookup
+  ads.js           Meta ad data, CSV import, funnel staging, survey and competitor ranking (shared with the browser)
+.claude/commands/
+  roast-research.md  Claude Code command that pulls your ads and your niche's competitor ads via the Meta Ads connector
 ```
+
+## Ads, survey and competitor research (optional)
+
+Give the panel your real ad numbers and customer words, and the verdict (and PDF report) adds three sections:
+
+- **Your ads by funnel stage:** spend, ROAS, CPA and CTR for top (cold prospecting), middle (engagers, video viewers) and bottom of funnel (retargeting), plus a verdict per stage: double down, fix, cut, or build what's missing.
+- **Voice of customer → creative:** the top reasons people bought, quoted from your post-purchase survey, turned into hooks and angles for new ads.
+- **What to test next:** tests based on your niche's competitor ads.
+
+Three ways to load the data, from the **Ads & customer research** box in the form:
+
+1. **Claude Code + Meta Ads connector (recommended).** Paste your Ads Manager link and your niche into the box, copy the generated command, and run it in Claude Code from this folder, for example `/roast-research https://adsmanager.facebook.com/...act=123 | sunset lamp projector`. It reads your last 30 days of ads (read-only) and searches the Meta Ad Library, then writes `research/<account>-<date>.json`. Click **Use latest research**.
+2. **Ads Manager CSV.** In Ads Manager, export an ad-level report (Ad name, Campaign name, Ad set name, Amount spent, Impressions, CTR, Link clicks, Adds to cart, Purchases, Purchases conversion value, ThruPlays) and upload it.
+3. **Post-purchase survey.** Paste answers (one per line) or upload a CSV from Fairing, KnoCommerce or a Shopify form.
+
+Notes:
+
+- Funnel stages are inferred from campaign and ad set names (prospecting/broad/LAL, engagers/video viewers, retargeting/visitors/ATC/DPA, Advantage+). Add a `stage` column (TOF/MOF/BOF/ALL) to override.
+- **Meta doesn't publish spend for commercial ads**, so nobody can tell you a competitor's real spend. The Roast Room ranks competitor ads by a spend proxy: how long each ad has run, with every extra live variant counted like a week of runtime. The report says so.
+- `research/*.json` is gitignored: it holds your private ad numbers. It's only sent to your own Roast Room server with a roast, and from there to Claude as part of the brief.
+- **Load sample store** also loads a clearly labelled sample ad account, survey and competitor set, so demo mode shows every section.
 
 - **Computed metrics:** before any model call, the server works out orders, gross and contribution margin, net profit, MER, break-even ROAS and CAC from your P&L. The advisors argue about strategy instead of doing arithmetic.
 - **Homepage fetch:** if you give a store URL, the server grabs the page title, meta description and visible text (capped at 2,500 chars). Untick it in the form to skip.

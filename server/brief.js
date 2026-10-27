@@ -1,5 +1,6 @@
 // Turns the form input into a store brief plus computed unit economics, so the
 // advisors argue about strategy instead of doing arithmetic.
+import { researchBrief } from "./ads.js";
 
 const num = (v) => {
   if (v === null || v === undefined || v === "") return null;
@@ -76,7 +77,7 @@ export function metricsLines(m) {
   return lines;
 }
 
-export function buildBrief(input, metrics, siteSnippet) {
+export function buildBrief(input, metrics, siteSnippet, research = null) {
   const p = input.pnl;
   const v = (x, fmt = (y) => y) => (x == null || x === "" ? "not given" : fmt(x));
   return [
@@ -94,6 +95,7 @@ export function buildBrief(input, metrics, siteSnippet) {
     `\n# Computed metrics`,
     ...(metricsLines(metrics).length ? metricsLines(metrics) : ["(not enough numbers to compute)"]),
     siteSnippet ? `\n# Store homepage text (auto-fetched, may be partial)\n"""\n${siteSnippet}\n"""` : "",
+    researchBrief(research),
   ]
     .filter(Boolean)
     .join("\n");

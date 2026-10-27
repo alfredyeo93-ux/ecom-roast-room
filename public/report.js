@@ -5,6 +5,7 @@ const esc = (s = "") =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const money = (n) => `$${Math.round(n).toLocaleString("en-US")}`;
 const pct = (n) => `${(n * 100).toFixed(1)}%`;
+const STAGE_NAME = { TOF: "Top of funnel", MOF: "Middle of funnel", BOF: "Bottom of funnel", ALL: "All-funnel" };
 
 let data = null;
 try {
@@ -21,7 +22,43 @@ if (data?.verdict) {
   setTimeout(() => window.print(), 600);
 }
 
-function render({ verdict: v, brief = {}, metrics, advisors = [], createdAt, demo }) {
+function growth(v, research) {
+  const parts = [];
+  const stages = Object.entries(research?.byStage || {});
+  if (stages.length) {
+    parts.push(`<h2>Your ads by funnel stage</h2>
+      <p class="sub small">${esc(research.account || "Your account")} · ${esc(research.period || "")} · ${research.totals?.ads ?? 0} ads, ${money(research.totals?.spend ?? 0)} spend, ROAS ${research.totals?.roas ?? "–"}x</p>
+      <table class="ftable"><thead><tr><th>Stage</th><th>Share of spend</th><th>Spend</th><th>Purchases</th><th>ROAS</th><th>CPA</th><th>CTR</th></tr></thead><tbody>${stages
+        .map(([st, s]) => `<tr><td><b>${esc(st)}</b> <small>${esc(STAGE_NAME[st] || "")}</small></td><td>${s.share ?? "–"}%</td><td>${money(s.spend)}</td><td>${s.purchases}</td><td>${s.roas ?? "–"}x</td><td>${s.cpa == null ? "–" : money(s.cpa)}</td><td>${s.ctr ?? "–"}%</td></tr>`)
+        .join("")}</tbody></table>
+      ${(research.notes || []).length ? `<p class="flag">${esc(research.notes.join(" "))}</p>` : ""}`);
+  }
+  if ((v.funnel || []).length) {
+    parts.push(`<h2>What's working, by stage</h2><div class="fcards">${v.funnel
+      .map((f) => `<div class="fcard"><div><b>${esc(f.stage)}</b> <span class="badge ${f.verdict === "double down" ? "go" : f.verdict === "cut" ? "stop" : "amend"}">${esc(f.verdict.toUpperCase())}</span></div><p>${esc(f.finding)}</p><p class="act">→ ${esc(f.action)}</p></div>`)
+      .join("")}</div>`);
+  }
+  const voc = v.voice_of_customer || {};
+  if (voc.themes?.length || voc.angles?.length) {
+    parts.push(`<h2>Voice of customer → creative</h2>
+      ${voc.themes?.length ? `<p class="sub small">Why customers bought${research?.surveyCount ? ` (from ${research.surveyCount} post-purchase survey answers)` : ""}:</p><ul class="why">${voc.themes.map((t) => `<li><b>${esc(t.theme)}</b> <span class="fix">“${esc(t.evidence)}”</span></li>`).join("")}</ul>` : ""}
+      ${voc.angles?.length ? `<p class="sub small">Angles to brief into creative:</p><ol class="plan">${voc.angles.map((a) => `<li><div><b>${esc(a.angle)}</b>: “${esc(a.hook)}”<small>${esc(a.format)} · ${esc(a.stage)}</small></div></li>`).join("")}</ol>` : ""}`);
+  }
+  if ((v.test_next || []).length) {
+    parts.push(`<h2>What to test next</h2><ol class="plan">${v.test_next
+      .map((x) => `<li><div><b>${esc(x.what_they_do)}</b><small>${esc(x.source)} · ${esc(x.stage)}</small>Why: ${esc(x.why_it_works)}<br><span class="test">Test: ${esc(x.test_brief)}</span></div></li>`)
+      .join("")}</ol>`);
+  }
+  if ((research?.competitors || []).length) {
+    parts.push(`<p class="sub small">Competitor ads reviewed${research.niche ? ` for “${esc(research.niche)}”` : ""}: ${research.competitors
+      .slice(0, 6)
+      .map((c) => `${esc(c.page)}, “${esc(c.title.slice(0, 70))}” (${c.daysActive ?? "?"} days, ${c.variants} variant${c.variants === 1 ? "" : "s"})`)
+      .join("; ")}. ${esc(research.competitorNote || "")}</p>`);
+  }
+  return parts.join("");
+}
+
+function render({ verdict: v, brief = {}, metrics, advisors = [], createdAt, demo, research }) {
   const byId = Object.fromEntries(advisors.map((a) => [a.id, a]));
   const t = v.tally || {};
   const score = v.overall_score;
@@ -93,6 +130,8 @@ function render({ verdict: v, brief = {}, metrics, advisors = [], createdAt, dem
     ${(v.watch_out || []).length ? `<h2>Watch out</h2><div class="quotes">${v.watch_out
       .map((q) => `<blockquote><small>${esc(byId[q.advisor]?.name || q.advisor)}</small>“${esc(q.quote)}”</blockquote>`)
       .join("")}</div>` : ""}
+
+    ${growth(v, research)}
 
     ${v.closing_line ? `<p class="closing">${esc(v.closing_line)}</p>` : ""}
 

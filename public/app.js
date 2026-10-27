@@ -1,5 +1,7 @@
 import { createScene } from "/scene.js";
 import { parseRound1, parseRound2 } from "/lib/parse.js";
+import { summarizeAds } from "/lib/ads.js";
+import { setupResearch, loadSampleResearch, currentResearch } from "/research-ui.js";
 
 const $ = (s) => document.querySelector(s);
 const form = $("#brief");
@@ -46,10 +48,12 @@ setupKeyBox();
 demoToggle.checked = !hasKey && !userKey();
 scene = createScene($("#stage"), personas);
 renderCards();
+setupResearch({ showToast: (m) => showToast(m) });
 
 $("#load-sample").addEventListener("click", async () => {
   const sample = await fetch("/sample-store.json").then((r) => r.json());
   fillForm(sample);
+  await loadSampleResearch();
 });
 
 form.addEventListener("submit", (e) => {
@@ -241,6 +245,7 @@ function renderVerdict(v) {
           .join("")}
       </div>
     </div>
+    ${growthSections(v)}
     <p class="v-close">${esc(v.closing_line || "")}</p>
     <div class="v-actions">
       <button type="button" id="download-pdf" class="pdf-btn">Download PDF report</button>
@@ -255,6 +260,32 @@ function renderVerdict(v) {
   };
 }
 
+// Funnel, voice of customer and what to test next (empty arrays render nothing).
+function growthSections(v) {
+  const funnel = v.funnel || [];
+  const voc = v.voice_of_customer || {};
+  const tests = v.test_next || [];
+  const out = [];
+  if (funnel.length) {
+    out.push(`<h3>YOUR ADS BY FUNNEL STAGE</h3><div class="funnel">${funnel
+      .map((f) => `<div class="fcard ${esc(f.verdict.replace(/\s/g, "-"))}"><div class="fhead"><b>${esc(f.stage)}</b><span class="fverdict">${esc(f.verdict.toUpperCase())}</span></div>
+        <p>${esc(f.finding)}</p><p class="faction">→ ${esc(f.action)}</p></div>`)
+      .join("")}</div>`);
+  }
+  if (voc.themes?.length || voc.angles?.length) {
+    out.push(`<h3>VOICE OF CUSTOMER → CREATIVE</h3><div class="v-cols">
+      <div>${(voc.themes || []).map((t) => `<div class="theme"><b>${esc(t.theme)}</b><span>“${esc(t.evidence)}”</span></div>`).join("") || "<p class='muted'>Add post-purchase survey answers to see why customers buy.</p>"}</div>
+      <div>${(voc.angles || []).map((a) => `<div class="angle"><small>${esc(a.stage)} · ${esc(a.format)}</small><b>${esc(a.angle)}</b><span>Hook: “${esc(a.hook)}”</span></div>`).join("")}</div>
+    </div>`);
+  }
+  if (tests.length) {
+    out.push(`<h3>WHAT TO TEST NEXT</h3><ol class="tests">${tests
+      .map((x) => `<li><small>${esc(x.stage)} · from ${esc(x.source)}</small><b>${esc(x.what_they_do)}</b><span>Why: ${esc(x.why_it_works)}</span><span class="tbrief">Test: ${esc(x.test_brief)}</span></li>`)
+      .join("")}</ol>`);
+  }
+  return out.join("");
+}
+
 // The report page reads this snapshot from localStorage, renders a printable A4 report and
 // opens the browser's "Save as PDF" dialog. The API key is never part of it.
 function openReport(v) {
@@ -266,6 +297,7 @@ function openReport(v) {
     brief,
     metrics: lastMetrics,
     verdict: v,
+    research: researchSnapshot(),
     advisors: personas.map((p) => ({
       id: p.id,
       name: p.name,
@@ -282,6 +314,25 @@ function openReport(v) {
     return;
   }
   window.open("/report.html", "_blank", "noopener");
+}
+
+function researchSnapshot() {
+  const r = state?.research;
+  if (!r) return null;
+  const s = summarizeAds(r.ads || []);
+  return {
+    source: r.source,
+    account: r.account,
+    period: r.period,
+    niche: r.niche,
+    byStage: s.byStage,
+    totals: s.totals,
+    notes: s.notes,
+    top: s.top.map((a) => ({ name: a.name, stage: a.stage, spend: a.spend, roas: a.roas, purchases: a.purchases })),
+    competitors: (r.competitors?.ads || []).slice(0, 8),
+    competitorNote: r.competitors?.note,
+    surveyCount: r.survey?.length || 0,
+  };
 }
 
 function planMarkdown(v) {
@@ -325,7 +376,9 @@ async function startRoast() {
     return;
   }
 
-  state = { text: {}, results: {}, phase: null };
+  const research = currentResearch();
+  if (research) body.research = research;
+  state = { text: {}, results: {}, phase: null, research };
   renderCards();
   scene.reset();
   verdictEl.hidden = true;

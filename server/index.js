@@ -1,11 +1,12 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { resolveApiKey } from "./apiKey.js";
 import { normaliseInput, computeMetrics, buildBrief, fetchStoreSnippet } from "./brief.js";
 import { runRoast, MODEL } from "./roast.js";
 import { runDemo } from "./demo.js";
+import { normalizeResearch } from "./ads.js";
 import { publicPersonas } from "./personas.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -13,12 +14,31 @@ const root = path.join(here, "..");
 const PORT = Number(process.env.PORT || 5178);
 
 const app = express();
-app.use(express.json({ limit: "200kb" }));
+app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(root, "public")));
 // three.js is served straight from node_modules, so there is no build step.
 app.use("/vendor/three", express.static(path.join(root, "node_modules", "three")));
 // The browser reuses the server's tolerant parser to render replies while they stream.
 app.get("/lib/parse.js", (_req, res) => res.type("text/javascript").sendFile(path.join(here, "parse.js")));
+app.get("/lib/ads.js", (_req, res) => res.type("text/javascript").sendFile(path.join(here, "ads.js")));
+
+// The newest research bundle written by the Claude Code /roast-research command (research/ is gitignored).
+app.get("/api/research", (_req, res) => {
+  const dir = path.join(root, "research");
+  const files = existsSync(dir)
+    ? readdirSync(dir)
+        .filter((f) => f.endsWith(".json"))
+        .map((f) => ({ f, t: statSync(path.join(dir, f)).mtimeMs }))
+        .sort((a, b) => b.t - a.t)
+    : [];
+  if (!files.length) return res.status(404).json({ error: "No research file yet. Run /roast-research in Claude Code, or upload a CSV." });
+  try {
+    const raw = JSON.parse(readFileSync(path.join(dir, files[0].f), "utf8"));
+    res.json({ file: files[0].f, research: normalizeResearch(raw) });
+  } catch (err) {
+    res.status(400).json({ error: `Couldn't read research/${files[0].f}: ${err.message}` });
+  }
+});
 
 app.get("/api/health", (_req, res) => {
   const { key, source } = resolveApiKey();
@@ -29,6 +49,7 @@ app.post("/api/roast", async (req, res) => {
   const demo = req.query.demo === "1" || req.body?.demo === true;
   const input = normaliseInput(req.body);
   const metrics = computeMetrics(input);
+  const research = req.body?.research ? normalizeResearch(req.body.research) : null;
 
   res.writeHead(200, {
     "content-type": "text/event-stream; charset=utf-8",
@@ -68,7 +89,7 @@ app.post("/api/roast", async (req, res) => {
       } else {
         const snippet = req.body?.fetchSite === false || !input.storeUrl ? "" : await fetchStoreSnippet(input.storeUrl);
         send({ type: "site", fetched: Boolean(snippet) });
-        await runRoast({ apiKey: key, brief: buildBrief(input, metrics, snippet), send, signal: ac.signal });
+        await runRoast({ apiKey: key, brief: buildBrief(input, metrics, snippet, research), send, signal: ac.signal });
       }
     }
   } catch (err) {
@@ -76,7 +97,10 @@ app.post("/api/roast", async (req, res) => {
   } finally {
     send({ type: "done" });
     res.end();
-    saveRun({ demo, input, events: log });
+    const researchSummary = research
+      ? { source: research.source, ads: research.ads.length, competitors: research.competitors.ads.length, survey: research.survey.length }
+      : null;
+    saveRun({ demo, input, research: researchSummary, events: log });
   }
 });
 

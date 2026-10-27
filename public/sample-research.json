@@ -1,0 +1,39 @@
+{
+  "source": "sample",
+  "generatedAt": "2026-10-27T00:00:00Z",
+  "account": { "name": "GlowNest (sample data)", "currency": "USD" },
+  "period": "last 30 days (sample)",
+  "niche": "sunset lamp projector",
+  "ads": [
+    { "name": "UGC_rental_glowup_v3", "campaign": "TOF | Broad | Sales", "adset": "Broad US 18-34", "spend": 5200, "impressions": 412000, "ctr": 1.42, "cpm": 12.62, "clicks": 5850, "addToCart": 610, "purchases": 236, "revenue": 10620, "roas": 2.04, "videoPlays3s": 136000, "thruplays": 41200 },
+    { "name": "Static_GLOW20_discount", "campaign": "TOF | Broad | Sales", "adset": "Broad US 18-34", "spend": 4100, "impressions": 365000, "ctr": 0.71, "cpm": 11.23, "clicks": 2590, "addToCart": 240, "purchases": 88, "revenue": 3700, "roas": 0.9 },
+    { "name": "Creator_room_tour_v1", "campaign": "TOF | Interests | Sales", "adset": "Home decor + TikTok", "spend": 3050, "impressions": 228000, "ctr": 1.15, "cpm": 13.38, "clicks": 2620, "addToCart": 260, "purchases": 97, "revenue": 4270, "roas": 1.4, "videoPlays3s": 70700, "thruplays": 17100 },
+    { "name": "Hook_test_sunset_ASMR", "campaign": "TOF | Hook testing", "adset": "Broad", "spend": 1400, "impressions": 131000, "ctr": 0.62, "cpm": 10.69, "clicks": 810, "addToCart": 60, "purchases": 19, "revenue": 800, "roas": 0.57, "videoPlays3s": 22300, "thruplays": 4100 },
+    { "name": "Reviews_carousel", "campaign": "MOF | Video viewers 50% + IG engagers", "adset": "Engagers 30d", "spend": 1600, "impressions": 64000, "ctr": 1.9, "cpm": 25, "clicks": 1220, "addToCart": 190, "purchases": 71, "revenue": 3410, "roas": 2.13 },
+    { "name": "Founder_story_v2", "campaign": "MOF | Video viewers 50% + IG engagers", "adset": "Video viewers 50%", "spend": 950, "impressions": 39000, "ctr": 1.35, "cpm": 24.36, "clicks": 530, "addToCart": 70, "purchases": 24, "revenue": 1060, "roas": 1.12, "videoPlays3s": 15600, "thruplays": 6200 },
+    { "name": "DPA_catalog_ATC", "campaign": "BOF | Retargeting | DPA", "adset": "ATC + IC 14d", "spend": 1300, "impressions": 26000, "ctr": 2.6, "cpm": 50, "clicks": 680, "addToCart": 150, "purchases": 118, "revenue": 5300, "roas": 4.08 },
+    { "name": "Retarget_GLOW20_reminder", "campaign": "BOF | Retargeting | DPA", "adset": "Site visitors 30d", "spend": 900, "impressions": 21000, "ctr": 1.4, "cpm": 42.86, "clicks": 300, "addToCart": 40, "purchases": 22, "revenue": 900, "roas": 1.0 }
+  ],
+  "competitors": [
+    { "page_name": "Lumio Lights (sample)", "ad_creative_link_title": "Your landlord can't stop this glow-up", "ad_creative_body": "Renter-friendly, no drilling. 3 heads, 1 lamp.", "ad_delivery_start_time": 1785542400, "ad_snapshot_url": "" },
+    { "page_name": "Lumio Lights (sample)", "ad_creative_link_title": "Your landlord can't stop this glow-up", "ad_creative_body": "Renter-friendly, no drilling. 3 heads, 1 lamp.", "ad_delivery_start_time": 1786752000, "ad_snapshot_url": "" },
+    { "page_name": "Lumio Lights (sample)", "ad_creative_link_title": "Bundle: lamp + 2 heads + remote, $69", "ad_creative_body": "Why buy one mood when you can switch three?", "ad_delivery_start_time": 1789171200, "ad_snapshot_url": "" },
+    { "page_name": "HaloHome (sample)", "ad_creative_link_title": "We tested 9 sunset lamps so you don't have to", "ad_creative_body": "Side-by-side, real rooms, no filters.", "ad_delivery_start_time": 1787961600, "ad_snapshot_url": "" },
+    { "page_name": "HaloHome (sample)", "ad_creative_link_title": "The $40 thing that made my room look expensive", "ad_creative_body": "Creator list format, 5 items, lamp is #1.", "ad_delivery_start_time": 1790380800, "ad_snapshot_url": "" },
+    { "page_name": "DuskBox (sample)", "ad_creative_link_title": "Golden hour, every hour", "ad_creative_body": "Static, 30% off.", "ad_delivery_start_time": 1792195200, "ad_snapshot_url": "" }
+  ],
+  "survey": [
+    "Saw it on a TikTok room tour and wanted my rental to look less boring",
+    "My room has white walls and zero personality, this fixed it",
+    "Gift for my girlfriend, she loves sunsets",
+    "I film content at night and needed better lighting for backgrounds",
+    "The before and after video sold me",
+    "Cheaper than repainting, and my landlord won't let me paint anyway",
+    "Wanted something cosy for winter evenings",
+    "Bought it for my kid's room as a night light",
+    "Saw a creator use it in her bedroom setup",
+    "Honestly the discount code pushed me over the edge",
+    "Makes my small apartment feel warm when I get home",
+    "Needed a backdrop for Zoom calls that wasn't my laundry"
+  ]
+}

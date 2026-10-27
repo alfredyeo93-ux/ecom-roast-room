@@ -81,7 +81,7 @@ export function advisorSystemPrompt(p) {
     `## Your lens\n${p.lens}`,
     `## Your voice\n${p.voice}\nRoast the business, never the person. Be funny and sharp, then be genuinely useful.`,
     kb ? `## Your knowledge base (frameworks summarised in our own words)\n${kb}` : "",
-    `## Ground rules\n- Use the numbers you are given; the "Computed metrics" are already calculated, trust them.\n- Every fix must be specific to THIS store: name the exact change, the number to hit, or the line to rewrite.\n- If a key input is missing, say what you'd need and assume conservatively.\n- Plain text only, no markdown headings, no tables, no emojis.`,
+    `## Ground rules\n- Use the numbers you are given; the "Computed metrics" are already calculated, trust them.\n- Every fix must be specific to THIS store: name the exact change, the number to hit, or the line to rewrite.\n- If a key input is missing, say what you'd need and assume conservatively.\n- Plain text only, no markdown headings, no tables, no emojis.\n- If the brief has a "Meta ads" section, judge it through your lens: name the specific ads, funnel stages (TOF/MOF/BOF) and numbers. If it has "Post-purchase survey answers", use the customers' own words. If it has "Competitor ads", reference them by page and headline. Never invent ad data, survey answers or competitor ads that aren't in the brief.`,
     bannedPatterns(),
   ]
     .filter(Boolean)
@@ -112,6 +112,7 @@ export function chairSystemPrompt() {
     `# Role\nYou are "The Chair" of the E-com Roast Room. You moderate four AI advisor characters (inspired by, not impersonating, Alex Hormozi, Eugene Schwartz, Mike Michalowicz and Nick Theriot).`,
     `Your job: read the store brief, every advisor's roast and their cross-fire, then hand down a fair verdict and an ordered action plan the owner can start on Monday. Resolve disagreements explicitly. Prefer fixes that move profit within 30 days.`,
     `Quote advisors only from what they actually wrote in this session (lightly trimmed). Never attribute words to the real authors.`,
+    `## Ads, survey and competitor sections\n- funnel: one entry per funnel stage that has data in the "Meta ads" section (TOF, MOF, BOF, ALL). verdict = "double down" (working: scale it), "fix" (promising but leaking), "cut" (losing money), or "build" (a missing stage worth adding, e.g. no retargeting). Cite the numbers. If there is no ad data, return an empty array.\n- voice_of_customer.themes: the top reasons customers bought, from "Post-purchase survey answers" only, each with a short verbatim customer phrase as evidence. Empty if there is no survey.\n- voice_of_customer.angles: 3 creative angles that turn those reasons (or, with no survey, the panel's insights) into ads: a hook line in the customers' words, a format and the funnel stage.\n- test_next: 3 to 5 tests. Base them on the competitor ads when present (source = the page name; their longest-running ads and most variants are the strongest signal, since Meta doesn't publish spend), otherwise on the panel's ideas (source = "panel"). Each needs what they do, why it likely works, and a concrete test brief for this store.`,
     bannedPatterns(),
   ]
     .filter(Boolean)
@@ -121,7 +122,7 @@ export function chairSystemPrompt() {
 export const CHAIR_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["headline", "overall_score", "confidence", "priorities", "watch_out", "closing_line"],
+  required: ["headline", "overall_score", "confidence", "priorities", "watch_out", "funnel", "voice_of_customer", "test_next", "closing_line"],
   properties: {
     headline: { type: "string", description: "One-sentence verdict on the store." },
     overall_score: { type: "integer", description: "0-100 overall health score." },
@@ -151,6 +152,69 @@ export const CHAIR_SCHEMA = {
         properties: {
           advisor: { type: "string", enum: ["offer", "copy", "profit", "creative"] },
           quote: { type: "string" },
+        },
+      },
+    },
+    funnel: {
+      type: "array",
+      description: "Per funnel stage with ad data: what's working and what to do. Empty when there is no ad data.",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["stage", "verdict", "finding", "action"],
+        properties: {
+          stage: { type: "string", enum: ["TOF", "MOF", "BOF", "ALL"] },
+          verdict: { type: "string", enum: ["double down", "fix", "cut", "build"] },
+          finding: { type: "string", description: "What the numbers say, with the numbers." },
+          action: { type: "string", description: "The specific next move." },
+        },
+      },
+    },
+    voice_of_customer: {
+      type: "object",
+      additionalProperties: false,
+      required: ["themes", "angles"],
+      properties: {
+        themes: {
+          type: "array",
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["theme", "evidence"],
+            properties: {
+              theme: { type: "string", description: "Why they bought, in a few words." },
+              evidence: { type: "string", description: "A short verbatim customer phrase from the survey." },
+            },
+          },
+        },
+        angles: {
+          type: "array",
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["angle", "hook", "format", "stage"],
+            properties: {
+              angle: { type: "string" },
+              hook: { type: "string", description: "First line of the ad, in the customers' words." },
+              format: { type: "string", description: "e.g. UGC talking head, before/after, founder story, static" },
+              stage: { type: "string", enum: ["TOF", "MOF", "BOF", "ALL"] },
+            },
+          },
+        },
+      },
+    },
+    test_next: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["source", "what_they_do", "why_it_works", "test_brief", "stage"],
+        properties: {
+          source: { type: "string", description: "Competitor page name, or 'panel'." },
+          what_they_do: { type: "string" },
+          why_it_works: { type: "string" },
+          test_brief: { type: "string", description: "The concrete test for this store." },
+          stage: { type: "string", enum: ["TOF", "MOF", "BOF", "ALL"] },
         },
       },
     },
